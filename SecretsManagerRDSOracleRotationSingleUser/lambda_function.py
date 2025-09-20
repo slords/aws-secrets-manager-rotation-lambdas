@@ -169,9 +169,11 @@ def set_secret(service_client, arn, token):
 
     # Now try the current password
     conn = get_connection(current_dict)
+    current_pass = current_dict["password"]
     if not conn and previous_dict:
         # If both current and pending do not work, try previous
         conn = get_connection(previous_dict)
+        current_pass = previous_dict["password"]
 
         # Make sure the user/host from previous and pending match
         if previous_dict['username'] != pending_dict['username']:
@@ -196,7 +198,7 @@ def set_secret(service_client, arn, token):
     pending_password = pending_dict['password'].replace("\"", "")
 
     # Now set the password to the pending password
-    sql = "ALTER USER %s IDENTIFIED BY \"%s\"" % (escaped_username, pending_dict['password'])
+    sql = "ALTER USER %s IDENTIFIED BY \"%s\" REPLACE \"%s\"" % (escaped_username, pending_dict['password'], current_pass)
     cur.execute(sql)
     conn.commit()
     logger.info("setSecret: Successfully set password for user %s in Oracle DB for secret arn %s." % (pending_dict['username'], arn))
