@@ -50,6 +50,9 @@ def lambda_handler(event, context):
 
     """
 
+    # Thick client to match functionality of cx_oracle
+    oracledb.init_oracle_client()
+
     arn = event['SecretId']
     token = event['ClientRequestToken']
     step = event['Step']
